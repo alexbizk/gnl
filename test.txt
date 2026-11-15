@@ -1,6 +1,0 @@
-Hello, 42 Prague!
-This is my get_next_line project.
-
-BUFFER_SIZE can be 1, 42, or 1024.
-ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789
-Last line without newline
