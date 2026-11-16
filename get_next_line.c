@@ -6,7 +6,7 @@
 /*   By: weitwang <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/07 15:45:20 by weitwang          #+#    #+#             */
-/*   Updated: 2026/11/07 20:28:15 by weitwang         ###   ########.fr       */
+/*   Updated: 2026/11/15 21:56:18 by weitwang         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,16 @@ static char	*join_stash(char *stash, char *buf)
 
 	if (stash == NULL)
 		return (ft_substr(buf, 0, ft_strlen(buf)));
-	tmp = stash;
+	tmp = stash;//两个指针指向同一块内存,用于释放旧的stash
 	stash = ft_strjoin(stash, buf);
 	free(tmp);
 	return (stash);
 }
+/*如果 ft_strjoin() 失败：
+1. tmp 仍然指向旧字符串 "Hello"。
+2. stash 变成 NULL。
+3. free(tmp) 释放旧字符串。
+这样不会泄漏旧的内存。*/
 
 static char	*read_to_stash(int fd, char *stash)
 {
@@ -34,7 +39,7 @@ static char	*read_to_stash(int fd, char *stash)
 	buf = malloc(BUFFER_SIZE + 1);
 	if (!buf)
 		return (free(stash), NULL);
-	bytes = 1;
+	bytes = 1;//先把变量 bytes 设置为 1，让下面的 while 循环能够开始执行。
 	while (bytes > 0 && (stash == NULL || !ft_strchr(stash, '\n')))
 	{
 		bytes = read(fd, buf, BUFFER_SIZE);
@@ -78,7 +83,7 @@ static char	*update_stash(char *stash)
 
 char	*get_next_line(int fd)
 {
-	static char	*stash;
+	static char	*stash;//static 可以让 stash 在多次调用 get_next_line() 之间保留它的值。
 	char		*line;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)

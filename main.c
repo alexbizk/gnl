@@ -6,7 +6,7 @@
 /*   By: weitwang <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/10/26 22:03:22 by weit              #+#    #+#             */
-/*   Updated: 2026/11/15 20:56:35 by weitwang         ###   ########.fr       */
+/*   Updated: 2026/11/15 21:41:42 by weitwang         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int	main(int argc, char **argv)
 	while (line != NULL)
 	{
 		printf("[%s]", line);
-		free(line);
+		free(line);//只释放 line 指向的内存， free(line)不会清空 stash
 		line = get_next_line(fd);
 	}
 	if (fd > 0)
