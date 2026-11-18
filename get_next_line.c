@@ -6,7 +6,7 @@
 /*   By: weitwang <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/07 15:45:20 by weitwang          #+#    #+#             */
-/*   Updated: 2026/11/18 21:51:24 by weitwang         ###   ########.fr       */
+/*   Updated: 2026/11/18 22:17:39 by weitwang         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ static int	trim_stash(char **stash, char *cur)
 
 static char	*read_to_stash(int fd, char *stash, char **cur)
 {
-	char	*buf;
+	char	*buf;//临时内存，用来接收 read 从文件中读取的数据。
 	ssize_t	bytes;
 
 	if (stash && ft_strchr(*cur, '\n'))
@@ -68,7 +68,7 @@ static char	*read_to_stash(int fd, char *stash, char **cur)
 	return (free(buf), stash);
 }
 
-static char	*extract_line(char *cur)
+static char	*extract_line(char *cur)//它只负责提取一行，不负责移动 cur，也不负责释放 stash。
 {
 	char	*nl;
 	char	*line;
@@ -95,9 +95,9 @@ char	*get_next_line(int fd)
 
 	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, NULL, 0) < 0)//read(fd, NULL, 0) 读 0 个字节，只用来检查 fd 还能不能用。fd 有效时它返回 0，什么都不会读走；fd 无效或者出错时返回 -1，代码就清空 stash 并返回 NULL
 	{
-		free(start_tmp_2_free);
+		free(start_tmp_2_free);//文件描述符 fd 无效时，GNL 不应该继续读取，所以之前储存的数据也需要清理
 		start_tmp_2_free = NULL;
-		return (cur = NULL, NULL);
+		return (cur = NULL, NULL);//整块内存都被释放了，包括 cur 指向的部分。但是 cur 并不会自动变成 NULL。
 	}
 	start_tmp_2_free = read_to_stash(fd, start_tmp_2_free, &cur);
 	if (start_tmp_2_free == NULL)
@@ -105,7 +105,7 @@ char	*get_next_line(int fd)
 	line = extract_line(cur);
 	if (line != NULL)
 		cur += ft_strlen(line);
-	if (line == NULL || *cur == '\0')
+	if (line == NULL || *cur == '\0')//当提取失败，或者当前这块内存中的数据已经全部使用完毕时
 	{
 		free(start_tmp_2_free);
 		start_tmp_2_free = NULL;
