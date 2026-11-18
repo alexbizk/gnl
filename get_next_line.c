@@ -6,7 +6,7 @@
 /*   By: weitwang <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/07 15:45:20 by weitwang          #+#    #+#             */
-/*   Updated: 2026/11/18 16:21:38 by weitwang         ###   ########.fr       */
+/*   Updated: 2026/11/18 21:51:24 by weitwang         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,13 @@ static int	trim_stash(char **stash, char *cur)
 		return (1);
 	rest = ft_substr(cur, 0, ft_strlen(cur));
 	free(*stash);//free 只能拿 malloc 返回的开头地址。
-	*stash = rest;
+	*stash = rest;//把调用者手里的那个 stash 指针，改成指向新口袋。//rest 是新口袋，接下来还要继续用；*stash 是旧口袋，已经没用了。free 只能用在不再需要的内存上。
 	return (rest != NULL);
+/*
+	if (rest != NULL)
+		return (1);
+	return (0);
+*/
 }
 
 static char	*read_to_stash(int fd, char *stash, char **cur)
@@ -88,8 +93,12 @@ char	*get_next_line(int fd)
 	static char	*cur;
 	char		*line;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
-		return (NULL);
+	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, NULL, 0) < 0)//read(fd, NULL, 0) 读 0 个字节，只用来检查 fd 还能不能用。fd 有效时它返回 0，什么都不会读走；fd 无效或者出错时返回 -1，代码就清空 stash 并返回 NULL
+	{
+		free(start_tmp_2_free);
+		start_tmp_2_free = NULL;
+		return (cur = NULL, NULL);
+	}
 	start_tmp_2_free = read_to_stash(fd, start_tmp_2_free, &cur);
 	if (start_tmp_2_free == NULL)
 		return (cur = NULL, NULL);
