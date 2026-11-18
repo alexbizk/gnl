@@ -6,7 +6,7 @@
 /*   By: weitwang <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/07 15:45:20 by weitwang          #+#    #+#             */
-/*   Updated: 2026/11/18 22:17:39 by weitwang         ###   ########.fr       */
+/*   Updated: 2026/11/18 22:22:30 by weitwang         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ static char	*read_to_stash(int fd, char *stash, char **cur)
 	char	*buf;//临时内存，用来接收 read 从文件中读取的数据。
 	ssize_t	bytes;
 
-	if (stash && ft_strchr(*cur, '\n'))
+	if (stash && ft_strchr(*cur, '\n'))//如果手上已经存着完整的一行，就不用再去读文件了。
 		return (stash);
 	buf = malloc(BUFFER_SIZE + 1);
 	if (!buf || !trim_stash(&stash, *cur))
