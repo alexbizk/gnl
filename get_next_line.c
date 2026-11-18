@@ -6,7 +6,7 @@
 /*   By: weitwang <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/07 15:45:20 by weitwang          #+#    #+#             */
-/*   Updated: 2026/11/17 14:59:38 by weitwang         ###   ########.fr       */
+/*   Updated: 2026/11/18 16:21:38 by weitwang         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,15 +24,16 @@ static char	*join_stash(char *stash, char *buf)
 	return (stash);
 }
 
-static char	*trim_stash(char *stash, char *cur)
+static int	trim_stash(char **stash, char *cur)
 {
 	char	*rest;
 
-	if (stash == NULL || cur == stash)
-		return (stash);
+	if (*stash == NULL || cur == *stash)
+		return (1);
 	rest = ft_substr(cur, 0, ft_strlen(cur));
-	free(stash);//free 只能拿 malloc 返回的开头地址。
-	return (rest);
+	free(*stash);//free 只能拿 malloc 返回的开头地址。
+	*stash = rest;
+	return (rest != NULL);
 }
 
 static char	*read_to_stash(int fd, char *stash, char **cur)
@@ -42,10 +43,9 @@ static char	*read_to_stash(int fd, char *stash, char **cur)
 
 	if (stash && ft_strchr(*cur, '\n'))
 		return (stash);
-	stash = trim_stash(stash, *cur);
 	buf = malloc(BUFFER_SIZE + 1);
-	if (!buf)
-		return (free(stash), NULL);
+	if (!buf || !trim_stash(&stash, *cur))
+		return (free(buf), free(stash), NULL);
 	bytes = 1;
 	while (bytes > 0 && (stash == NULL || !ft_strchr(stash, '\n')))
 	{
